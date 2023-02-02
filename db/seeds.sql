@@ -1,26 +1,25 @@
+--Inserting data into our tables
 INSERT INTO department(name)
 VALUES
-    ('Sales'), 
+    ('Design'), 
     ('Engineering'), 
     ('Finance'), 
-    ('Human Resource');
+    ('Human Resources');
 
 INSERT INTO role(title, salary, department_id )
 VALUES
-    ('Sales Lead', 100000, 1), 
-    ('Salesperson', 80000, 1),
-    ('Lead Engineer', 150000, 2), 
-    ('Software Engineer', 120000, 2), 
-    ('Account Manager', 160000, 3),
-    ('Accountant', 125000, 3),
-    ('Human Resource Manager',155000, 4);
+    ('UX Designer', 100000, 1), 
+    ('Visual Designer', 10000, 1),
+    ('Software Engineer', 160000, 2), 
+    ('Accountant', 140000, 3),
+    ('Human Resource Specialist',10000, 4);
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
 VALUES
-    ('Nichola', 'Jewel', 1, NULL), 
-    ('Annie', 'Emerie', 2, 1), 
-    ('Chrissie', 'Daniela', 3, NULL), 
-    ('Mabella', 'Toby', 4, 3),
-    ('Jacinda', 'Addie', 5, NULL),
-    ('Abigayle', 'Emory',6, 5),
-    ('Lindsie', 'Isebella', 7, NULL); 
+    ('Jackie', 'Lee', 1, NULL), 
+    ('John', 'Doe', 2, 1), 
+    ('John', 'Proctor', 3, NULL), 
+    ('Giles', 'Corey', 4, 3),
+    ('Jane', 'Doe', 4, NULL),
+    ('Edward', 'Bishop',2, 5),
+    ('Alice', 'Young', 3, NULL); 

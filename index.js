@@ -1,14 +1,17 @@
+//application uses inquirer and mysql2 and console.table
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
+const cTable = require('console.table');
 
 
-
-const init = async () => {
+//function to inituate inquirer that ask what the user wants to do. Inquirer uses a list that gives user choices.
+//then uses a switch to determine which funtion to execute depending on the users answers
+function init() {
     inquirer.prompt({
         type:"list",
         message:"What would you like to do?",
         name:"option",
-        choices: ["View All Employees","Add Employee","Update Employee Role","View All Roles","Add Role","View All Departments", "Add Department","Quit"],
+        choices: ["View All Employees","View All Roles","View All Departments","Update Employee Role","Add Employee","Add Role", "Add Department","Quit"],
     }).then(response =>{
         switch(response.option) {
             case "View All Employees":
@@ -33,12 +36,11 @@ const init = async () => {
                 addDepartment();
                 break;
             case "Quit":
-                return;
+                process.exit();
         }
     }) 
 }
-
-
+//creates a connection with the mysql database
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -48,29 +50,40 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the books_db database.`)
 );
-
-
+//getDepartments function that uses a query to get data back from our mysql database. 
+//query will grab all columns in the department table and we print it out with console.table
+//uses the init() as a recursive function so users can go back to the menu and select again.
 function getDepartments(){
     db.query('SELECT * FROM department', function (err, results) {
        console.table(results);
        init();
       });
 }
-    
+//getEmployees function that uses a query to get data back from our mysql database
+//query will select id, first name, last name, role title, department name salary and manager name.
+// it also joines two tables with role ids and department id to connect data together. 
+//uses init function so user can go back to the menu and select again.
 function getEmployees(){
-    db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id', function (err, results) {
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name,' ',manager.last_name) AS manager FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id  LEFT JOIN employee manager ON manager.id = employee.manager_id`, function (err, results) {
         console.table(results);
         init();
       }); 
 }
 
+//getRole function that uses a query to get data back from mysql
+//query will select role title, role id, department name, and salary of all the roles.
+//it also joins the depertmant database so we know which department title each role is in.
+//uses init function to return to menu.
 function getRole(){
-    db.query('SELECT role.title, role.id, department.name, role.salary FROM role JOIN department on department_id = department.id', function (err, results) {
+    db.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department on department_id = department.id', function (err, results) {
         console.table(results);
         init();
     });
 }
 
+//addDepartment function that uses inquirer to ask user to name the department they want to add
+//then uses mysql query to insert the new department into the db with the response in inquirer
+//uses init function to return to menu after
 function addDepartment(){
     inquirer.prompt({
         type:"input",
@@ -82,6 +95,12 @@ function addDepartment(){
     })     
 }
 
+//addrole function that first uses a query to get the names of all the department in our department database
+//inquirer asked users for the name of role they want to add and the salary of the role
+//then it list out the departments in our database to have user select which department they are adding the role for
+//uses query again to search for the role id in our department database with the department name
+//then uses query again to add our new role into the role database with the retrieved department id. 
+//uses init function to return to menu after
 function addRole(){
 
     const deptList = []
@@ -116,6 +135,12 @@ function addRole(){
     })   
 }
 
+//addEmployee Function that first uses querys to get a list of name of the roles in our roles database as well as a list of the name of employees in our employee database
+//use inquier to ask for first name, last name and then list out all the possible roles and the possible managers our new employee will have so our uses can choose. 
+//then we use query again to grab the role_id of the role our user selected as well the the employee_id the user selected as the manager.
+//if user selected none for the manager then the employee_id will be null
+//uses query to insert the new employee into our database with the information we grabbed from query and inquierer
+//uses init to reutn to menu after
 function addEmployee(){
     const roleList = []
     db.query("SELECT title FROM role", function (err, results){
@@ -174,6 +199,9 @@ function addEmployee(){
     })   
 }
 
+//updateEmployee function that first uses query to get a list of names of all the employee as well as all the roles in our databases
+//then uses inquirer to list out which employee user want to update and which role user want to update the employee too
+//uses query again to find role ID and then uses query again to UPDATE our database by using paremeter to match the cell we're trying to update
 function updateEmployee(){
     const employeeList = []
     const roleList = []
@@ -199,9 +227,7 @@ function updateEmployee(){
             }
             ]).then(response =>{
                 db.query("SELECT id FROM role WHERE title = ?", [response.roleSelected], function (err,results){
-                    console.log(results[0].id);
                     const employeeName = response.employeeSelected.split(" ");
-                    console.log(employeeName);
                     db.query("UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?",[results[0].id,employeeName[0],employeeName[1]], function (err,res){
                         init();
                     });
