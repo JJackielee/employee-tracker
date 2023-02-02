@@ -54,7 +54,7 @@ const db = mysql.createConnection(
 //query will grab all columns in the department table and we print it out with console.table
 //uses the init() as a recursive function so users can go back to the menu and select again.
 function getDepartments(){
-    db.query('SELECT * FROM department', function (err, results) {
+    db.query('SELECT * FROM department ORDER BY department.id', function (err, results) {
        console.table(results);
        init();
       });
@@ -64,7 +64,7 @@ function getDepartments(){
 // it also joines two tables with role ids and department id to connect data together. 
 //uses init function so user can go back to the menu and select again.
 function getEmployees(){
-    db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name,' ',manager.last_name) AS manager FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id  LEFT JOIN employee manager ON manager.id = employee.manager_id`, function (err, results) {
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name,' ',manager.last_name) AS manager FROM employee JOIN role ON role_id = role.id JOIN department ON department_id = department.id  LEFT JOIN employee manager ON manager.id = employee.manager_id ORDER BY employee.id`, function (err, results) {
         console.table(results);
         init();
       }); 
@@ -75,7 +75,7 @@ function getEmployees(){
 //it also joins the depertmant database so we know which department title each role is in.
 //uses init function to return to menu.
 function getRole(){
-    db.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department on department_id = department.id', function (err, results) {
+    db.query('SELECT role.id, role.title, department.name, role.salary FROM role JOIN department on department_id = department.id ORDER BY role.id', function (err, results) {
         console.table(results);
         init();
     });

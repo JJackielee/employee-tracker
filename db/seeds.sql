@@ -1,4 +1,4 @@
---Inserting data into our tables
+-- Inserting data into our tables
 INSERT INTO department(name)
 VALUES
     ('Design'), 

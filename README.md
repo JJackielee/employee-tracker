@@ -26,8 +26,7 @@ After cloning all the files from the respository you would need to install a few
 - you can also update an employee which will ask you which employee to update and which role you want to update to. 
 
 
-![adding a note](/images/note1.png)
-![preview a note](/images/note2.png)
+[link to walk through video](https://drive.google.com/file/d/1MiOwDD7dqVtZZkpm7u2Oo7PwvApEbM-4/view)
 
 
 ## Credits
